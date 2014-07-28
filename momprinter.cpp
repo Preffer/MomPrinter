@@ -12,3 +12,13 @@ momPrinter::~momPrinter()
 {
     delete ui;
 }
+
+void momPrinter::on_pushButton_clicked()
+{
+    QPrinter printer;
+
+    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    dialog->setWindowTitle(tr("Print Document"));
+    if (dialog->exec() != QDialog::Accepted)
+        return;
+}

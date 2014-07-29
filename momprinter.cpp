@@ -2,25 +2,33 @@
 #include "ui_momprinter.h"
 #include <QDebug>
 
+content::content(){};
+
+content::content(int x, int y, QString text) :
+    x(x),
+    y(y),
+    text(text)
+{};
+
 momPrinter::momPrinter(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::momPrinter)
 {
     ui->setupUi(this);
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName (":memory:");
     if(!db.open()){
         QMessageBox::critical(this, "Can not open SQLITE database", db.lastError().text());
     } else{
-        QSqlQuery query;
         //create tables
-        query.exec("CREATE TABLE content (typeID INT PRIMARY KEY, name VARCHAR, num INT)");
-        query.exec("CREATE TABLE type(typeID INT PRIMARY KEY, typeName VARCHAR)");
+        QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
+        query->exec("CREATE TABLE content (typeID INT PRIMARY KEY, name VARCHAR, num INT)");
+        query->exec("CREATE TABLE type(typeID INT PRIMARY KEY, typeName VARCHAR)");
         //insert values
-        query.exec("INSERT INTO type VALUES (1, '壹角票')");
-        query.exec("INSERT INTO type VALUES (2, '贰角票')");
-        query.exec("INSERT INTO type VALUES (3, '伍角票')");
-        query.exec("INSERT INTO type VALUES (4, '壹元票')");
+        query->exec("INSERT INTO type VALUES (1, '壹角票')");
+        query->exec("INSERT INTO type VALUES (2, '贰角票')");
+        query->exec("INSERT INTO type VALUES (3, '伍角票')");
+        query->exec("INSERT INTO type VALUES (4, '壹元票')");
         model = new QSqlRelationalTableModel();
         model->setEditStrategy(QSqlTableModel::OnManualSubmit);
         model->setTable("content");
@@ -35,14 +43,17 @@ momPrinter::momPrinter(QWidget *parent) :
 momPrinter::~momPrinter()
 {
     delete ui;
+    delete model;
+    db.close();
 }
 
 void momPrinter::on_printButton_clicked()
 {
     //init a printer
-    QPrinter printer(QPrinter::HighResolution);
+    QSharedPointer<QPrinter> printer = (QSharedPointer<QPrinter>) new QPrinter(QPrinter::HighResolution);
+   // QPrinter* printer = new QPrinter(QPrinter::HighResolution);
     //set page layout
-    printer.setPageLayout(
+    printer->setPageLayout(
         QPageLayout(
             QPageSize(
                 QSizeF(WIDTH, HEIGHT),
@@ -56,22 +67,22 @@ void momPrinter::on_printButton_clicked()
         )
     );
     //display the dialog
-    QPrintDialog dialog(&printer, this);
-    dialog.setWindowTitle("Print Document");
-    if (dialog.exec() != QDialog::Accepted){
+    QSharedPointer<QPrintDialog> dialog = (QSharedPointer<QPrintDialog>) new QPrintDialog(printer.data(), this);
+    dialog->setWindowTitle("Print Document");
+    if (dialog->exec() != QDialog::Accepted){
         return;
     }
 
     //use painter to draw on the page
-    QPainter painter;
-    painter.begin(&printer);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing);
+    QSharedPointer<QPainter> painter = (QSharedPointer<QPainter>) new QPainter();
+    painter->begin(printer.data());
+    painter->setRenderHint(QPainter::HighQualityAntialiasing);
     //set font
     QFont font;
     font.setPointSize(12);
-    painter.setFont(font);
+    painter->setFont(font);
     //prepare draw
-    const int widthPixel = printer.pageRect().width();
+    const int widthPixel = printer->pageRect().width();
     const int heightPixel = widthPixel * HEIGHT / WIDTH;
 
     //put the content into the target
@@ -85,9 +96,9 @@ void momPrinter::on_printButton_clicked()
     QVectorIterator<content> i(target);
     while (i.hasNext()){
         content cache = i.next();
-        painter.drawText(widthPixel * cache.x / WIDTH, heightPixel * cache.y / HEIGHT, cache.text);
+        painter->drawText(widthPixel * cache.x / WIDTH, heightPixel * cache.y / HEIGHT, cache.text);
     }
-    painter.end();
+    painter->end();
 }
 
 void momPrinter::on_commitButton_clicked()

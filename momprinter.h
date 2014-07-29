@@ -35,6 +35,7 @@ private slots:
 private:
     Ui::momPrinter *ui;
     QSqlRelationalTableModel *model;
+    QSqlDatabase db;
 };
 
 class content
@@ -44,9 +45,8 @@ public:
     int y;
     QString text;
 
-    explicit content(){};
-    explicit content(int x, int y, QString text)
-        : x(x), y(y), text(text) {};
+    explicit content();
+    explicit content(int x, int y, QString text);
 };
 
 //define width and height, all in Millimeter

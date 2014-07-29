@@ -20,6 +20,8 @@ class momPrinter : public QMainWindow
 public:
     explicit momPrinter(QWidget *parent = 0);
     ~momPrinter();
+    QString toChineseNum(int num);
+    bool isMust5(QString integerStr);
 
 private slots:
     void on_addButton_clicked();

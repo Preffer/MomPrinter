@@ -86,18 +86,18 @@ void momPrinter::on_printButton_clicked()
     QSharedPointer<QPrinter> printer = (QSharedPointer<QPrinter>) new QPrinter(QPrinter::HighResolution);
     //set page layout
     printer->setPageLayout(
-        QPageLayout(
-            QPageSize(
-                QSizeF(WIDTH, HEIGHT),
-                QPageSize::Millimeter,
-                "stamp-tax",
-                QPageSize::ExactMatch
-            ),
-            QPageLayout::Landscape,
-            QMarginsF(),
-            QPageLayout::Millimeter
-        )
-    );
+                QPageLayout(
+                    QPageSize(
+                        QSizeF(WIDTH, HEIGHT),
+                        QPageSize::Millimeter,
+                        "stamp-tax",
+                        QPageSize::ExactMatch
+                        ),
+                    QPageLayout::Landscape,
+                    QMarginsF(),
+                    QPageLayout::Millimeter
+                    )
+                );
     //display the dialog
     QSharedPointer<QPrintDialog> dialog = (QSharedPointer<QPrintDialog>) new QPrintDialog(printer.data(), this);
     dialog->setWindowTitle("Print Document");
@@ -121,9 +121,9 @@ void momPrinter::on_printButton_clicked()
     QVector<content> target(0);
     target.append(content(ID_X, ID_Y, ui->lineEdit->text()));
     QDate date = QDate::currentDate ();
-    target.append(content(YEAR_X, DATE_Y, QString("%1").arg(date.year())));
-    target.append(content(MONTH_X, DATE_Y, QString("%1").arg(date.month())));
-    target.append(content(DAY_X, DATE_Y, QString("%1").arg(date.day())));
+    target.append(content(YEAR_X, DATE_Y, QString::number(date.year(), 10)));
+    target.append(content(MONTH_X, DATE_Y, QString::number(date.month(), 10)));
+    target.append(content(DAY_X, DATE_Y, QString::number(date.day(), 10)));
     //put sql result into the target
     QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
     query->exec("SELECT type.typeName, name, num, type.typePrice FROM content JOIN type ON type.typeID = content.typeID");
@@ -132,14 +132,37 @@ void momPrinter::on_printButton_clicked()
     int index_num = query->record().indexOf("num");
     int index_typePrice = query->record().indexOf("typePrice");
     int currentRow = 0;
+    int sum = 0;
     while (query->next()) {
         int price = query->value(index_num).toInt() * query->value(index_typePrice).toInt();
+        sum += price;
         target.append(content(CELL_X * 0 + TABLE_X, ROW_Y * currentRow + TABLE_Y, query->value(index_typeName).toString()));
         target.append(content(CELL_X * 1 + TABLE_X, ROW_Y * currentRow + TABLE_Y, query->value(index_name).toString()));
         target.append(content(CELL_X * 2 + TABLE_X, ROW_Y * currentRow + TABLE_Y, query->value(index_num).toString()));
-        target.append(content(CELL_X * 3 + TABLE_X, ROW_Y * currentRow + TABLE_Y, QString("%1").arg(price) + ".00"));
+        target.append(content(CELL_X * 3 + TABLE_X, ROW_Y * currentRow + TABLE_Y, QString::number(price, 10) + ".00"));
         currentRow++;
     }
+    //add the sum
+    QString sumString = QString::number(sum, 10);
+    qDebug() << sumString.split("", QString::SkipEmptyParts);
+    QStringListIterator sumStringList(sumString.split("", QString::SkipEmptyParts));
+    QString chineseString;
+    QStringList chineseStringList;
+    chineseStringList.append("零");
+    chineseStringList.append("一");
+    chineseStringList.append("二");
+    chineseStringList.append("三");
+    chineseStringList.append("四");
+    chineseStringList.append("五");
+    chineseStringList.append("六");
+    chineseStringList.append("七");
+    chineseStringList.append("八");
+    chineseStringList.append("九");
+    while (sumStringList.hasNext()){
+        chineseString += chineseStringList.at(sumStringList.next().toInt());
+    }
+    target.append(content(SUM_ZH_X, SUM_ZH_Y, chineseString));
+    target.append(content(CELL_X * 3 + TABLE_X, SUM_ZH_Y, sumString + ".00"));
     //start paint
     QVectorIterator<content> i(target);
     while (i.hasNext()){

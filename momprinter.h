@@ -62,5 +62,7 @@ public:
 #define TABLE_Y 60
 #define CELL_X 53
 #define ROW_Y 5
+#define SUM_ZH_X 58
+#define SUM_ZH_Y 110
 
 #endif // MOMPRINTER_H

@@ -4,6 +4,10 @@
 #include <QMainWindow>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QPainter>
+#include <QtSql>
+#include <QMessageBox>
+#include <QSqlRelationalTableModel>
 
 namespace Ui {
 class momPrinter;
@@ -18,10 +22,41 @@ public:
     ~momPrinter();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_printButton_clicked();
+
+    void on_addButton_clicked();
+
+    void on_commitButton_clicked();
+
+    void on_cancelButton_clicked();
+
+    void on_deleteButton_clicked();
 
 private:
     Ui::momPrinter *ui;
+    QSqlRelationalTableModel *model;
 };
+
+class content
+{
+public:
+    int x;
+    int y;
+    QString text;
+
+    explicit content(){};
+    explicit content(int x, int y, QString text)
+        : x(x), y(y), text(text) {};
+};
+
+//define width and height, all in Millimeter
+#define WIDTH 240
+#define HEIGHT 150
+#define ID_X 45
+#define ID_Y 42
+#define YEAR_X 100
+#define MONTH_X 114
+#define DAY_X 128
+#define DATE_Y 34
 
 #endif // MOMPRINTER_H

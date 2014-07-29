@@ -22,8 +22,6 @@ public:
     ~momPrinter();
 
 private slots:
-    void on_printButton_clicked();
-
     void on_addButton_clicked();
 
     void on_commitButton_clicked();
@@ -31,6 +29,8 @@ private slots:
     void on_cancelButton_clicked();
 
     void on_deleteButton_clicked();
+
+    void on_printButton_clicked();
 
 private:
     Ui::momPrinter *ui;
@@ -58,5 +58,9 @@ public:
 #define MONTH_X 114
 #define DAY_X 128
 #define DATE_Y 34
+#define TABLE_X 25
+#define TABLE_Y 60
+#define CELL_X 53
+#define ROW_Y 5
 
 #endif // MOMPRINTER_H

@@ -99,7 +99,6 @@ momPrinter::~momPrinter()
 
 void momPrinter::updateSum()
 {
-    //update the sum
     QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
     query->exec("SELECT num, typePrice FROM content");
     int index_num = query->record().indexOf("num");
@@ -113,6 +112,8 @@ void momPrinter::updateSum()
 
 void momPrinter::on_printButton_clicked()
 {
+    //updateSum first
+    this->updateSum();
     //init a printer
     QSharedPointer<QPrinter> printer = (QSharedPointer<QPrinter>) new QPrinter(QPrinter::HighResolution);
     //set page layout

@@ -5,10 +5,9 @@
 #-------------------------------------------------
 
 QT      += core gui
+QT      += widgets
 QT      += printsupport
 QT      += sql
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = momPrinter
 TEMPLATE = app

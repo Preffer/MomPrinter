@@ -182,7 +182,6 @@ void momPrinter::on_printButton_clicked()
     target.append(content(ID_X, ID_Y, ui->idEdit->text()));
     target.append(content(ID_X + CELL_X * 2, ID_Y, ui->nameEdit->text()));
     target.append(content(DAY_X + CELL_X, DATE_Y, "直属一分局"));
-    target.append(content(CELL_X * 1 + TABLE_X, TABLE_Y, "借款合同印花税"));
     QDate date = QDate::currentDate ();
     target.append(content(YEAR_X, DATE_Y, QString::number(date.year())));
     target.append(content(MONTH_X, DATE_Y, QString::number(date.month())));
@@ -199,6 +198,7 @@ void momPrinter::on_printButton_clicked()
         int price = query->value(index_num).toInt() * query->value(index_typePrice).toInt();
         sum += price;
         target.append(content(CELL_X * 0 + TABLE_X, ROW_Y * currentRow + TABLE_Y, query->value(index_typeName).toString()));
+        target.append(content(CELL_X * 1 + TABLE_X, ROW_Y * currentRow + TABLE_Y, "借款合同印花税"));
         target.append(content(CELL_X * 2 + TABLE_X, ROW_Y * currentRow + TABLE_Y, query->value(index_num).toString()));
         target.append(content(CELL_X * 3 + TABLE_X, ROW_Y * currentRow + TABLE_Y, QString::number(price) + ".00"));
         currentRow++;

@@ -10,7 +10,7 @@
 #include <QSqlRelationalTableModel>
 
 namespace Ui {
-class momPrinter;
+    class momPrinter;
 }
 
 class momPrinter : public QMainWindow

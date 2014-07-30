@@ -22,8 +22,8 @@ momPrinter::momPrinter(QWidget *parent) :
     } else{
         //create tables
         QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
-        query->exec("CREATE TABLE content (type INTEGER PRIMARY KEY NOT NULL, num INTEGER NOT NULL)");
-        query->exec("CREATE TABLE type(typeID INTEGER PRIMARY KEY NOT NULL, typeName VARCHAR(32), typePrice INTEGER)");
+        query->exec("CREATE TABLE content (type INTEGER NOT NULL, num INTEGER NOT NULL)");
+        query->exec("CREATE TABLE type(typeID INTEGER NOT NULL, typeName VARCHAR(64) NOT NULL, typePrice INTEGER NOT NULL)");
         //insert values
         query->exec("INSERT INTO type VALUES (1, '壹元票', 1)");
         query->exec("INSERT INTO type VALUES (2, '贰元票', 2)");

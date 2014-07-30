@@ -23,3 +23,5 @@ FORMS    += momprinter.ui
 
 RESOURCES += \
     resource.qrc
+
+RC_FILE += logo.rc

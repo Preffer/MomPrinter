@@ -41,7 +41,6 @@ momPrinter::momPrinter(QWidget *parent) :
         ui->tableView->setItemDelegate(new QSqlRelationalDelegate());
     }
     this->on_addButton_clicked();
-    qDebug() << this->toChineseNum(1000020);
 }
 
 QString momPrinter::toChineseNum(int num){

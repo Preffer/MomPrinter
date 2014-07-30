@@ -20,3 +20,6 @@ SOURCES += main.cpp\
 HEADERS  += momprinter.h
 
 FORMS    += momprinter.ui
+
+RESOURCES += \
+    resource.qrc

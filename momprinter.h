@@ -7,7 +7,7 @@
 #include <QPainter>
 #include <QtSql>
 #include <QMessageBox>
-#include <QSqlRelationalTableModel>
+#include <QSqlTableModel>
 
 namespace Ui {
     class momPrinter;
@@ -24,19 +24,13 @@ public:
     bool isMust5(QString integerStr);
 
 private slots:
-    void on_addButton_clicked();
-
-    void on_commitButton_clicked();
-
-    void on_cancelButton_clicked();
-
-    void on_deleteButton_clicked();
-
     void on_printButton_clicked();
+
+    void updateSum();
 
 private:
     Ui::momPrinter *ui;
-    QSqlRelationalTableModel *model;
+    QSqlTableModel *model;
     QSqlDatabase db;
 };
 

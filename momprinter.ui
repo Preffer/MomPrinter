@@ -25,34 +25,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="1">
-     <widget class="QPushButton" name="commitButton">
-      <property name="sizeIncrement">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>保存</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QPushButton" name="addButton">
-      <property name="text">
-       <string>新增</string>
-      </property>
-     </widget>
-    </item>
-    <item row="10" column="0" colspan="2">
-     <widget class="QLineEdit" name="nameEdit">
-      <property name="placeholderText">
-       <string>纳税人姓名</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0" rowspan="9">
+    <item row="0" column="0" rowspan="6">
      <widget class="QTableView" name="tableView">
       <property name="font">
        <font>
@@ -62,7 +35,7 @@
       </property>
      </widget>
     </item>
-    <item row="9" column="0" colspan="2">
+    <item row="6" column="0" colspan="2">
      <widget class="QLineEdit" name="idEdit">
       <property name="font">
        <font>
@@ -75,35 +48,28 @@
       </property>
      </widget>
     </item>
-    <item row="11" column="0" colspan="2">
+    <item row="8" column="0" colspan="2">
      <widget class="QPushButton" name="printButton">
       <property name="text">
        <string>开始打印</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="1">
-     <widget class="QPushButton" name="deleteButton">
-      <property name="text">
-       <string>删除</string>
+    <item row="7" column="0" colspan="2">
+     <widget class="QLineEdit" name="nameEdit">
+      <property name="placeholderText">
+       <string>纳税人姓名</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="1">
-     <widget class="QPushButton" name="cancelButton">
-      <property name="text">
-       <string>取消</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="1">
+    <item row="3" column="1">
      <widget class="QLabel" name="labelTip">
       <property name="text">
        <string>当前总金额：</string>
       </property>
      </widget>
     </item>
-    <item row="7" column="1">
+    <item row="4" column="1">
      <widget class="QLabel" name="labelResult">
       <property name="text">
        <string>0.00</string>

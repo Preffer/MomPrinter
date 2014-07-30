@@ -22,25 +22,22 @@ momPrinter::momPrinter(QWidget *parent) :
     } else{
         //create tables
         QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
-        query->exec("CREATE TABLE content (type INTEGER NOT NULL, num INTEGER NOT NULL)");
-        query->exec("CREATE TABLE type(typeID INTEGER NOT NULL, typeName VARCHAR(64) NOT NULL, typePrice INTEGER NOT NULL)");
+        query->exec("CREATE TABLE content (typeName VARCHAR(64) NOT NULL, num INTEGER NOT NULL, typePrice INTEGER NOT NULL)");
         //insert values
-        query->exec("INSERT INTO type VALUES (1, '壹元票', 1)");
-        query->exec("INSERT INTO type VALUES (2, '贰元票', 2)");
-        query->exec("INSERT INTO type VALUES (3, '伍元票', 5)");
-        query->exec("INSERT INTO type VALUES (4, '拾元票', 10)");
-        query->exec("INSERT INTO type VALUES (5, '伍拾元票', 50)");
-        query->exec("INSERT INTO type VALUES (6, '壹佰元票', 100)");
-        model = new QSqlRelationalTableModel();
-        model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+        query->exec("INSERT INTO content VALUES ('壹元票', 0, 1)");
+        query->exec("INSERT INTO content VALUES ('贰元票', 0, 2)");
+        query->exec("INSERT INTO content VALUES ('伍元票', 0, 5)");
+        query->exec("INSERT INTO content VALUES ('拾元票', 0, 10)");
+        query->exec("INSERT INTO content VALUES ('伍拾元票', 0, 50)");
+        query->exec("INSERT INTO content VALUES ('壹佰元票', 0, 100)");
+        model = new QSqlTableModel();
         model->setTable("content");
-        model->setRelation(0, QSqlRelation("type", "typeID", "typeName"));
         model->select();
 
         ui->tableView->setModel(model);
-        ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
+        ui->tableView->hideColumn(2);
+        connect(model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)), this, SLOT(updateSum()));
     }
-    this->on_addButton_clicked();
 }
 
 QString momPrinter::toChineseNum(int num){
@@ -100,19 +97,11 @@ momPrinter::~momPrinter()
     db.close();
 }
 
-
-void momPrinter::on_commitButton_clicked()
+void momPrinter::updateSum()
 {
-    model->database().transaction();
-    if (model->submitAll()) {
-        model->database().commit();
-    } else {
-        model->database().rollback();
-        QMessageBox::warning( this, "Commit Error", model->lastError().text());
-    }
     //update the sum
     QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
-    query->exec("SELECT num, type.typePrice FROM content JOIN type ON type.typeID = content.type");
+    query->exec("SELECT num, typePrice FROM content");
     int index_num = query->record().indexOf("num");
     int index_typePrice = query->record().indexOf("typePrice");
     int sum = 0;
@@ -122,26 +111,8 @@ void momPrinter::on_commitButton_clicked()
     ui->labelResult->setText(QString::number(sum) + ".00");
 }
 
-void momPrinter::on_cancelButton_clicked()
-{
-    model->revertAll();
-}
-
-void momPrinter::on_addButton_clicked()
-{
-    model->insertRow(model->rowCount()); //index of the new row is equal to the rowCount
-}
-
-void momPrinter::on_deleteButton_clicked()
-{
-    model->removeRow(ui->tableView->currentIndex().row());
-    this->on_commitButton_clicked();
-}
-
 void momPrinter::on_printButton_clicked()
 {
-    //commit first
-    this->on_commitButton_clicked();
     //init a printer
     QSharedPointer<QPrinter> printer = (QSharedPointer<QPrinter>) new QPrinter(QPrinter::HighResolution);
     //set page layout
@@ -188,7 +159,7 @@ void momPrinter::on_printButton_clicked()
     target.append(content(DAY_X, DATE_Y, QString::number(date.day())));
     //put sql result into the target
     QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
-    query->exec("SELECT type.typeName, num, type.typePrice FROM content JOIN type ON type.typeID = content.type");
+    query->exec("SELECT typeName, num, typePrice FROM content WHERE num != 0");
     int index_typeName = query->record().indexOf("typeName");
     int index_num = query->record().indexOf("num");
     int index_typePrice = query->record().indexOf("typePrice");

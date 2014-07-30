@@ -22,7 +22,7 @@ momPrinter::momPrinter(QWidget *parent) :
     } else{
         //create tables
         QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
-        query->exec("CREATE TABLE content (typeID INT PRIMARY KEY, name VARCHAR, num INT)");
+        query->exec("CREATE TABLE content (typeID INT PRIMARY KEY, num INT)");
         query->exec("CREATE TABLE type(typeID INT PRIMARY KEY, typeName VARCHAR, typePrice REAL)");
         //insert values
         query->exec("INSERT INTO type VALUES (1, '壹元票', 1)");
@@ -40,33 +40,42 @@ momPrinter::momPrinter(QWidget *parent) :
         ui->tableView->setModel(model);
         ui->tableView->setItemDelegate(new QSqlRelationalDelegate());
     }
+    this->on_addButton_clicked();
     qDebug() << this->toChineseNum(1000020);
 }
 
 QString momPrinter::toChineseNum(int num){
     QString sourceString = QString::number(num);
     QStringListIterator sourceStringList(sourceString.split("", QString::SkipEmptyParts));
-    QVector<int> numArray(0);
+    QVector<int> integers(0);
     while (sourceStringList.hasNext()){
-        numArray.append(sourceStringList.next().toInt());
+        integers.append(sourceStringList.next().toInt());
     }
-    QString chineseString;
     QString chineseNumbers[] = {"零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"};
     QString chineseUnits[] = {"元", "拾", "佰", "仟", "万", "拾", "佰", "仟", "亿", "拾", "佰", "仟", "万", "拾", "佰", "仟" };
 
-    //bool isMust5 = isMust5(sourceString);
-    int size = numArray.size();
-    for(int i = 0; i < size; i++){
-        int pos = size - i;
-        if(numArray.at(i) || pos == 4 || pos == 8){
-            chineseString += chineseNumbers[numArray.at(i)] + chineseUnits[pos - 1];
-        } else{
-            if(pos != 1 && numArray.at(i+1)){
-                chineseString += chineseNumbers[numArray.at(i)];
-            }
-        }
+    QStringList chineseInteger;
+    int length = integers.size();
+    for (int i = 0; i < length; i++) {
+      // 0出现在关键位置：1234(万)5678(亿)9012(万)3456(元)
+      // 特殊情况：10(拾元、壹拾元、壹拾万元、拾万元)
+      QString key = "";
+      if (integers[i] == 0) {
+        if ((length - i) == 13)// 万(亿)(必填)
+          key = chineseUnits[4];
+        else if ((length - i) == 9)// 亿(必填)
+          key = chineseUnits[8];
+        else if ((length - i) == 5 && this->isMust5(sourceString))// 万(不必填)
+          key = chineseUnits[4];
+        else if ((length - i) == 1)// 元(必填)
+          key = chineseUnits[0];
+        // 0遇非0时补零，不包含最后一位
+        if ((length - i) > 1 && integers[i + 1] != 0)
+          key += chineseNumbers[0];
+      }
+      chineseInteger.append(integers[i] == 0 ? key : (chineseNumbers[integers[i]] + chineseUnits[length - i - 1]));
     }
-    return chineseString;
+    return chineseInteger.join("");
 }
 
 bool momPrinter::isMust5(QString integerStr) {
@@ -126,7 +135,6 @@ void momPrinter::on_addButton_clicked()
 
 void momPrinter::on_deleteButton_clicked()
 {
-    qDebug() << ui->tableView->currentIndex().row();
     model->removeRow(ui->tableView->currentIndex().row());
     this->on_commitButton_clicked();
 }
@@ -170,18 +178,20 @@ void momPrinter::on_printButton_clicked()
     const int widthPixel = printer->pageRect().width();
     const int heightPixel = widthPixel * HEIGHT / WIDTH;
 
-    //put the content into the target
+    //put the static content into the target
     QVector<content> target(0);
-    target.append(content(ID_X, ID_Y, ui->lineEdit->text()));
+    target.append(content(ID_X, ID_Y, ui->idEdit->text()));
+    target.append(content(ID_X + CELL_X * 2, ID_Y, ui->nameEdit->text()));
+    target.append(content(DAY_X + CELL_X, DATE_Y, "直属一分局"));
+    target.append(content(CELL_X * 1 + TABLE_X, TABLE_Y, "借款合同印花税"));
     QDate date = QDate::currentDate ();
     target.append(content(YEAR_X, DATE_Y, QString::number(date.year())));
     target.append(content(MONTH_X, DATE_Y, QString::number(date.month())));
     target.append(content(DAY_X, DATE_Y, QString::number(date.day())));
     //put sql result into the target
     QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
-    query->exec("SELECT type.typeName, name, num, type.typePrice FROM content JOIN type ON type.typeID = content.typeID");
+    query->exec("SELECT type.typeName, num, type.typePrice FROM content JOIN type ON type.typeID = content.typeID");
     int index_typeName = query->record().indexOf("typeName");
-    int index_name = query->record().indexOf("name");
     int index_num = query->record().indexOf("num");
     int index_typePrice = query->record().indexOf("typePrice");
     int currentRow = 0;
@@ -190,7 +200,6 @@ void momPrinter::on_printButton_clicked()
         int price = query->value(index_num).toInt() * query->value(index_typePrice).toInt();
         sum += price;
         target.append(content(CELL_X * 0 + TABLE_X, ROW_Y * currentRow + TABLE_Y, query->value(index_typeName).toString()));
-        target.append(content(CELL_X * 1 + TABLE_X, ROW_Y * currentRow + TABLE_Y, query->value(index_name).toString()));
         target.append(content(CELL_X * 2 + TABLE_X, ROW_Y * currentRow + TABLE_Y, query->value(index_num).toString()));
         target.append(content(CELL_X * 3 + TABLE_X, ROW_Y * currentRow + TABLE_Y, QString::number(price) + ".00"));
         currentRow++;

@@ -22,27 +22,39 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="8" column="0" colspan="2">
-     <widget class="QPushButton" name="printButton">
-      <property name="text">
-       <string>开始打印</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="0" colspan="2">
-     <widget class="QLineEdit" name="lineEdit">
-      <property name="font">
-       <font>
-        <family>微软雅黑</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
+     <widget class="QLineEdit" name="nameEdit">
       <property name="placeholderText">
-       <string>纳税人识别号</string>
+       <string>纳税人姓名</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="0" rowspan="7">
-     <widget class="QTableView" name="tableView"/>
+    <item row="2" column="1">
+     <widget class="QPushButton" name="cancelButton">
+      <property name="text">
+       <string>取消</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QPushButton" name="addButton">
+      <property name="text">
+       <string>新增</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QPushButton" name="deleteButton">
+      <property name="text">
+       <string>删除</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QLabel" name="labelTip">
+      <property name="text">
+       <string>当前总金额：</string>
+      </property>
+     </widget>
     </item>
     <item row="6" column="1">
      <widget class="QLabel" name="labelResult">
@@ -54,36 +66,44 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="1">
-     <widget class="QLabel" name="labelTip">
-      <property name="text">
-       <string>当前总金额：</string>
+    <item row="0" column="0" rowspan="7">
+     <widget class="QTableView" name="tableView">
+      <property name="font">
+       <font>
+        <family>微软雅黑</family>
+        <pointsize>12</pointsize>
+       </font>
       </property>
      </widget>
     </item>
-    <item row="4" column="1">
-     <widget class="QPushButton" name="deleteButton">
-      <property name="text">
-       <string>删除</string>
+    <item row="7" column="0" colspan="2">
+     <widget class="QLineEdit" name="idEdit">
+      <property name="font">
+       <font>
+        <family>微软雅黑</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="placeholderText">
+       <string>纳税人识别号</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
-     <widget class="QPushButton" name="addButton">
+    <item row="9" column="0" colspan="2">
+     <widget class="QPushButton" name="printButton">
       <property name="text">
-       <string>新增</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QPushButton" name="cancelButton">
-      <property name="text">
-       <string>取消</string>
+       <string>开始打印</string>
       </property>
      </widget>
     </item>
     <item row="1" column="1">
      <widget class="QPushButton" name="commitButton">
+      <property name="sizeIncrement">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="text">
        <string>保存</string>
       </property>

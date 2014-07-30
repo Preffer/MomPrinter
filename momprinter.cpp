@@ -22,8 +22,8 @@ momPrinter::momPrinter(QWidget *parent) :
     } else{
         //create tables
         QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
-        query->exec("CREATE TABLE content (typeID INT PRIMARY KEY, num INT)");
-        query->exec("CREATE TABLE type(typeID INT PRIMARY KEY, typeName VARCHAR, typePrice REAL)");
+        query->exec("CREATE TABLE content (type INTEGER PRIMARY KEY NOT NULL, num INTEGER NOT NULL)");
+        query->exec("CREATE TABLE type(typeID INTEGER PRIMARY KEY NOT NULL, typeName VARCHAR(32), typePrice INTEGER)");
         //insert values
         query->exec("INSERT INTO type VALUES (1, '壹元票', 1)");
         query->exec("INSERT INTO type VALUES (2, '贰元票', 2)");
@@ -38,7 +38,7 @@ momPrinter::momPrinter(QWidget *parent) :
         model->select();
 
         ui->tableView->setModel(model);
-        ui->tableView->setItemDelegate(new QSqlRelationalDelegate());
+        ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
     }
     this->on_addButton_clicked();
 }
@@ -112,7 +112,7 @@ void momPrinter::on_commitButton_clicked()
     }
     //update the sum
     QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
-    query->exec("SELECT num, type.typePrice FROM content JOIN type ON type.typeID = content.typeID");
+    query->exec("SELECT num, type.typePrice FROM content JOIN type ON type.typeID = content.type");
     int index_num = query->record().indexOf("num");
     int index_typePrice = query->record().indexOf("typePrice");
     int sum = 0;
@@ -189,7 +189,7 @@ void momPrinter::on_printButton_clicked()
     target.append(content(DAY_X, DATE_Y, QString::number(date.day())));
     //put sql result into the target
     QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
-    query->exec("SELECT type.typeName, num, type.typePrice FROM content JOIN type ON type.typeID = content.typeID");
+    query->exec("SELECT type.typeName, num, type.typePrice FROM content JOIN type ON type.typeID = content.type");
     int index_typeName = query->record().indexOf("typeName");
     int index_num = query->record().indexOf("num");
     int index_typePrice = query->record().indexOf("typePrice");

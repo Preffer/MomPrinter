@@ -53,41 +53,41 @@ QString momPrinter::toChineseNum(int num){
     QStringList chineseInteger;
     int length = integers.size();
     for (int i = 0; i < length; i++) {
-      // 0出现在关键位置：1234(万)5678(亿)9012(万)3456(元)
-      // 特殊情况：10(拾元、壹拾元、壹拾万元、拾万元)
-      QString key = "";
-      if (integers[i] == 0) {
-        if ((length - i) == 13)// 万(亿)(必填)
-          key = chineseUnits[4];
-        else if ((length - i) == 9)// 亿(必填)
-          key = chineseUnits[8];
-        else if ((length - i) == 5 && this->isMust5(sourceString))// 万(不必填)
-          key = chineseUnits[4];
-        else if ((length - i) == 1)// 元(必填)
-          key = chineseUnits[0];
-        // 0遇非0时补零，不包含最后一位
-        if ((length - i) > 1 && integers[i + 1] != 0)
-          key += chineseNumbers[0];
-      }
-      chineseInteger.append(integers[i] == 0 ? key : (chineseNumbers[integers[i]] + chineseUnits[length - i - 1]));
+        // 0出现在关键位置：1234(万)5678(亿)9012(万)3456(元)
+        // 特殊情况：10(拾元、壹拾元、壹拾万元、拾万元)
+        QString key = "";
+        if (integers[i] == 0) {
+            if ((length - i) == 13)// 万(亿)(必填)
+                key = chineseUnits[4];
+            else if ((length - i) == 9)// 亿(必填)
+                key = chineseUnits[8];
+            else if ((length - i) == 5 && this->isMust5(sourceString))// 万(不必填)
+                key = chineseUnits[4];
+            else if ((length - i) == 1)// 元(必填)
+                key = chineseUnits[0];
+            // 0遇非0时补零，不包含最后一位
+            if ((length - i) > 1 && integers[i + 1] != 0)
+                key += chineseNumbers[0];
+        }
+        chineseInteger.append(integers[i] == 0 ? key : (chineseNumbers[integers[i]] + chineseUnits[length - i - 1]));
     }
-    return chineseInteger.join("");
+    return chineseInteger.join("") + "整";
 }
 
 bool momPrinter::isMust5(QString integerStr) {
-  int length = integerStr.size();
-  if (length > 4) {
-    QString subInteger = "";
-    if (length > 8) {
-      // 取得从低位数，第5到第8位的字串
-      subInteger = integerStr.mid(length - 5, 4);
+    int length = integerStr.size();
+    if (length > 4) {
+        QString subInteger = "";
+        if (length > 8) {
+            // 取得从低位数，第5到第8位的字串
+            subInteger = integerStr.mid(length - 5, 4);
+        } else {
+            subInteger = integerStr.mid(0, 4);
+        }
+        return subInteger.toInt() > 0;
     } else {
-      subInteger = integerStr.mid(0, 4);
+        return false;
     }
-    return subInteger.toInt() > 0;
-  } else {
-    return false;
-  }
 }
 
 momPrinter::~momPrinter()

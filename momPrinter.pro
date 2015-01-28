@@ -12,6 +12,7 @@ QT      += sql
 TARGET = momPrinter
 TEMPLATE = app
 
+CONFIG += c++11
 
 SOURCES += main.cpp\
         momprinter.cpp

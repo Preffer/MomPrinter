@@ -3,9 +3,9 @@
 
 int main(int argc, char *argv[])
 {
-    QSharedPointer<QApplication> app = (QSharedPointer<QApplication>) new QApplication(argc, argv);
-    QSharedPointer<momPrinter> widget = (QSharedPointer<momPrinter>) new momPrinter();
-    widget->show();
+    QApplication app(argc, argv);
+    momPrinter widget;
 
-    return app->exec();
+    widget.show();
+    return app.exec();
 }

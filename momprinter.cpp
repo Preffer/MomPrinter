@@ -1,10 +1,16 @@
 #include "momprinter.h"
 #include "ui_momprinter.h"
 #include <QDebug>
+#include <QPrinter>
+#include <QPrintDialog>
+#include <QPainter>
+#include <QMessageBox>
+#include <QSqlTableModel>
+#include <QSettings>
 
-momPrinter::momPrinter(QWidget *parent) :
+MomPrinter::MomPrinter(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::momPrinter)
+    ui(new Ui::MomPrinter)
 {
     ui->setupUi(this);
     db = QSqlDatabase::addDatabase("QSQLITE");
@@ -29,17 +35,39 @@ momPrinter::momPrinter(QWidget *parent) :
         ui->tableView->setModel(model);
         ui->tableView->hideColumn(2);
         connect(model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)), this, SLOT(updateSum()));
+
+        QSettings settings("config.ini", QSettings::IniFormat);
+        WIDTH = settings.value("WIDTH").toInt();
+        HEIGHT = settings.value("HEIGHT").toInt();
+        ID_X = settings.value("ID_X").toInt();
+        ID_Y = settings.value("ID_Y").toInt();
+        YEAR_X = settings.value("YEAR_X").toInt();
+        MONTH_X = settings.value("MONTH_X").toInt();
+        DAY_X = settings.value("DAY_X").toInt();
+        DATE_Y = settings.value("DATE_Y").toInt();
+        TABLE_X = settings.value("TABLE_X").toInt();
+        TABLE_Y = settings.value("TABLE_Y").toInt();
+        CELL_X = settings.value("CELL_X").toInt();
+        ROW_Y = settings.value("ROW_Y").toInt();
+        SUM_ZH_X = settings.value("SUM_ZH_X").toInt();
+        SUM_ZH_Y = settings.value("SUM_ZH_Y").toInt();
+        FONT_SIZE = settings.value("FONT_SIZE").toInt();
+
+        if(WIDTH == 0){
+            QMessageBox::critical(this, "Missing config.ini", "This program need a config.ini to work properly.");
+            exit(-1);
+        }
     }
 }
 
-momPrinter::~momPrinter()
+MomPrinter::~MomPrinter()
 {
     delete ui;
     delete model;
     db.close();
 }
 
-void momPrinter::updateSum()
+void MomPrinter::updateSum()
 {
     QSharedPointer<QSqlQuery> query = (QSharedPointer<QSqlQuery>) new QSqlQuery();
     query->exec("SELECT num, typePrice FROM content");
@@ -52,7 +80,7 @@ void momPrinter::updateSum()
     ui->labelResult->setText(QString::number(sum) + ".00");
 }
 
-void momPrinter::on_printButton_clicked()
+void MomPrinter::on_printButton_clicked()
 {
     //updateSum first
     this->updateSum();
@@ -85,7 +113,7 @@ void momPrinter::on_printButton_clicked()
     painter->setRenderHint(QPainter::HighQualityAntialiasing);
     //set font
     QFont font;
-    font.setPointSize(12);
+    font.setPointSize(FONT_SIZE);
     painter->setFont(font);
     //prepare draw
     const int widthPixel = printer->pageRect().width();

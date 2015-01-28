@@ -9,7 +9,7 @@ QT      += widgets
 QT      += printsupport
 QT      += sql
 
-TARGET = momPrinter
+TARGET = MomPrinter
 TEMPLATE = app
 
 CONFIG += c++11
